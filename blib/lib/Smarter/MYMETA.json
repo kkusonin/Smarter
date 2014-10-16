@@ -4,7 +4,7 @@
       "root"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Install version 1.10, CPAN::Meta::Converter version 2.141520",
+   "generated_by" : "ExtUtils::MakeMaker version 6.92, CPAN::Meta::Converter version 2.141520",
    "license" : [
       "perl_5"
    ],
@@ -15,8 +15,8 @@
    "name" : "Smarter",
    "no_index" : {
       "directory" : [
-         "inc",
-         "t"
+         "t",
+         "inc"
       ]
    },
    "prereqs" : {
@@ -36,7 +36,7 @@
             "Catalyst::Action::RenderView" : "0",
             "Catalyst::Plugin::ConfigLoader" : "0",
             "Catalyst::Plugin::Static::Simple" : "0",
-            "Catalyst::Runtime" : "5.90075",
+            "Catalyst::Runtime" : "5.90065",
             "Config::General" : "0",
             "Moose" : "0",
             "namespace::autoclean" : "0"
@@ -44,10 +44,5 @@
       }
    },
    "release_status" : "stable",
-   "resources" : {
-      "license" : [
-         "http://dev.perl.org/licenses/"
-      ]
-   },
    "version" : "0.01"
 }

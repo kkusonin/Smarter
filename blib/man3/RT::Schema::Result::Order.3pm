@@ -123,29 +123,95 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "Smarter 3"
-.TH Smarter 3 "2014-10-15" "perl v5.10.1" "User Contributed Perl Documentation"
+.IX Title "RT::Schema::Result::Order 3"
+.TH RT::Schema::Result::Order 3 "2014-10-15" "perl v5.10.1" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "NAME"
-Smarter \- Catalyst based application
-.SH "SYNOPSIS"
-.IX Header "SYNOPSIS"
-.Vb 1
-\&    script/smarter_server.pl
+RT::Schema::Result::Order
+.SH "COMPONENTS LOADED"
+.IX Header "COMPONENTS LOADED"
+.IP "\(bu" 4
+DBIx::Class::InflateColumn::DateTime
+.ie n .SH "TABLE: ""orders"""
+.el .SH "TABLE: \f(CWorders\fP"
+.IX Header "TABLE: orders"
+.SH "ACCESSORS"
+.IX Header "ACCESSORS"
+.SS "id"
+.IX Subsection "id"
+.Vb 4
+\&  data_type: \*(Aqbigint\*(Aq
+\&  extra: {unsigned => 1}
+\&  is_auto_increment: 1
+\&  is_nullable: 0
 .Ve
-.SH "DESCRIPTION"
-.IX Header "DESCRIPTION"
-[enter your description here]
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
-Smarter::Controller::Root, Catalyst
-.SH "AUTHOR"
-.IX Header "AUTHOR"
-root
-.SH "LICENSE"
-.IX Header "LICENSE"
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
+.SS "login"
+.IX Subsection "login"
+.Vb 4
+\&  data_type: \*(Aqvarchar\*(Aq
+\&  default_value: (empty string)
+\&  is_nullable: 0
+\&  size: 32
+.Ve
+.SS "account"
+.IX Subsection "account"
+.Vb 4
+\&  data_type: \*(Aqvarchar\*(Aq
+\&  default_value: (empty string)
+\&  is_nullable: 0
+\&  size: 32
+.Ve
+.SS "dept_id"
+.IX Subsection "dept_id"
+.Vb 4
+\&  data_type: \*(Aqsmallint\*(Aq
+\&  default_value: 0
+\&  extra: {unsigned => 1}
+\&  is_nullable: 0
+.Ve
+.SS "usl"
+.IX Subsection "usl"
+.Vb 4
+\&  data_type: \*(Aqvarchar\*(Aq
+\&  default_value: \*(AqViasatPremiumHD\*(Aq
+\&  is_nullable: 0
+\&  size: 32
+.Ve
+.SS "status"
+.IX Subsection "status"
+.Vb 4
+\&  data_type: \*(Aqenum\*(Aq
+\&  default_value: \*(AqNEW\*(Aq
+\&  extra: {list => ["NEW","PROCESSING","PROCESSED","DENIED"]}
+\&  is_nullable: 0
+.Ve
+.SS "req_cnt"
+.IX Subsection "req_cnt"
+.Vb 3
+\&  data_type: \*(Aqsmallint\*(Aq
+\&  default_value: 0
+\&  is_nullable: 0
+.Ve
+.SS "entry_time"
+.IX Subsection "entry_time"
+.Vb 4
+\&  data_type: \*(Aqtimestamp\*(Aq
+\&  datetime_undef_if_invalid: 1
+\&  default_value: current_timestamp
+\&  is_nullable: 1
+.Ve
+.SS "update_time"
+.IX Subsection "update_time"
+.Vb 4
+\&  data_type: \*(Aqtimestamp\*(Aq
+\&  datetime_undef_if_invalid: 1
+\&  default_value: current_timestamp
+\&  is_nullable: 1
+.Ve
+.SH "PRIMARY KEY"
+.IX Header "PRIMARY KEY"
+.IP "\(bu" 4
+\&\*(L"id\*(R"

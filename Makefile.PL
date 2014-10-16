@@ -9,10 +9,11 @@ use Module::Install::Catalyst; # Complain loudly if you don't have
 name 'Smarter';
 all_from 'lib/Smarter.pm';
 
-requires 'Catalyst::Runtime' => '5.90065';
+requires 'Catalyst::Runtime' => '5.90075';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Model::DBIC::Schema';
 requires 'Moose';
 requires 'namespace::autoclean';
 requires 'Config::General'; # This should reflect the config file format you've chosen
