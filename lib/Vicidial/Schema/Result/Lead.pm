@@ -390,7 +390,32 @@ __PACKAGE__->set_primary_key("lead_id");
 # Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-13 13:35:00
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MLp02XmhhxHTtBAE6iQE1g
 
+sub get_custom_fields {
+    my $self = shift;
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+    my @row = $self->result_source->storage->dbh_do(
+      sub {
+        my ($storage, $dbh, $list_id, $lead_id, @cols) = @_;
+        my @row;
+
+        my $cols = join q{, }, @cols;
+        eval {
+          @row = $dbh->selectrow_array(
+            "SELECT $cols FROM custom_$list_id WHERE lead_id = ?",
+            undef,
+            ( $lead_id ),
+          );
+        };
+        return ($@) ? () : @row;
+      },
+      $self->list_id,
+      $self->lead_id,
+      @_
+    );
+
+    return @row;
+}
+
 __PACKAGE__->meta->make_immutable;
+
 1;

@@ -4,6 +4,10 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+__PACKAGE__->config(
+  account => 'address2',
+);
+
 =head1 NAME
 
 Smarter::Controller::RT::Order - Catalyst Controller
@@ -29,13 +33,22 @@ sub create : Chained('base') PathPart('order') Args(0) {
   my $lead_id = $c->req->params->{lead_id};
   my $status  = $c->req->params->{status};
 
+  foreach (keys %{$self->config}) {
+    $c->log->debug("Config params: $_ => " . ${$self->config}{$_});
+  }
+
   if ($status eq 'PR') {
     my $lead = $c->model('VicidialDB::Lead')->find($lead_id);
     my $dept_id = $lead->city;
     my $account = $lead->address2;
     my $login   = $lead->address3;
-    $c->log->debug("Got order data: dept_id: $dept_id, account: $account, login: $login");
+
+    my ($verified) = $lead->get_custom_fields('check_pr');
+    
+    $c->log->info("$lead_id: status not verified") unless $verified > 1;
+
     eval {
+      $c->log->debug($self->config->{account});
       $order = $c->model('RtDB::Order')->create({
           dept_id   => $dept_id,
           account   => $account,
