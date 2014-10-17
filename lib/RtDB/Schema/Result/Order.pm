@@ -45,6 +45,13 @@ __PACKAGE__->table("orders");
   is_auto_increment: 1
   is_nullable: 0
 
+=head2 lead_id
+
+  data_type: 'integer'
+  default_value: 0
+  extra: {unsigned => 1}
+  is_nullable: 0
+
 =head2 order_id
 
   data_type: 'varchar'
@@ -100,6 +107,12 @@ __PACKAGE__->table("orders");
   default_value: 0
   is_nullable: 0
 
+=head2 verified
+
+  data_type: 'tinyint'
+  default_value: 0
+  is_nullable: 0
+
 =head2 entry_time
 
   data_type: 'timestamp'
@@ -122,6 +135,13 @@ __PACKAGE__->add_columns(
     data_type => "bigint",
     extra => { unsigned => 1 },
     is_auto_increment => 1,
+    is_nullable => 0,
+  },
+  "lead_id",
+  {
+    data_type => "integer",
+    default_value => 0,
+    extra => { unsigned => 1 },
     is_nullable => 0,
   },
   "order_id",
@@ -155,6 +175,8 @@ __PACKAGE__->add_columns(
   },
   "req_cnt",
   { data_type => "smallint", default_value => 0, is_nullable => 0 },
+  "verified",
+  { data_type => "tinyint", default_value => 0, is_nullable => 0 },
   "entry_time",
   {
     data_type => "timestamp",
@@ -184,8 +206,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-16 11:51:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DPuFXZWiPPAl8J0xsBWa3g
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-17 16:46:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6vszn8jBsqdzPA39WpTEHQ
 use Data::Uniqid qw(luniqid);
 
 sub new {
@@ -201,4 +223,5 @@ sub new {
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 
 1;
+
 

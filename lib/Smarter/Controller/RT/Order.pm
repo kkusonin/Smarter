@@ -31,30 +31,28 @@ sub create : Chained('base') PathPart('order') Args(0) {
   my $order;
 
   my $lead_id = $c->req->params->{lead_id};
-  my $status  = $c->req->params->{status};
-
-  foreach (keys %{$self->config}) {
-    $c->log->debug("Config params: $_ => " . ${$self->config}{$_});
-  }
+  my $lead = $c->model('VicidialDB::Lead')->find($lead_id);
+  my $status  = $lead->status;
 
   if ($status eq 'PR') {
-    my $lead = $c->model('VicidialDB::Lead')->find($lead_id);
     my $dept_id = $lead->city;
     my $account = $lead->address2;
     my $login   = $lead->address3;
 
     my ($verified) = $lead->get_custom_fields('check_pr');
     
-    $c->log->info("$lead_id: status not verified") unless $verified > 1;
+    $c->log->info("$lead_id: status not verified") unless $verified == 2;
 
     eval {
       $c->log->debug($self->config->{account});
       $order = $c->model('RtDB::Order')->create({
+          lead_id   => $lead_id,
           dept_id   => $dept_id,
           account   => $account,
           login     => $login,
           usl       => 'ViasatPremiumHD',
           contract  => 'SMARTER',
+          verified  => (defined $verified && $verified == 2),
         });
     };
     if ($@) {
