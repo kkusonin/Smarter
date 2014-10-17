@@ -1,12 +1,12 @@
 use utf8;
-package RtDB::Schema::Result::Order;
+package RT::Schema::Result::Order;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-RtDB::Schema::Result::Order
+RT::Schema::Result::Order
 
 =cut
 
@@ -45,20 +45,6 @@ __PACKAGE__->table("orders");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 lead_id
-
-  data_type: 'integer'
-  default_value: 0
-  extra: {unsigned => 1}
-  is_nullable: 0
-
-=head2 order_id
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 64
-
 =head2 login
 
   data_type: 'varchar'
@@ -87,13 +73,6 @@ __PACKAGE__->table("orders");
   is_nullable: 0
   size: 32
 
-=head2 contract
-
-  data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 32
-
 =head2 status
 
   data_type: 'enum'
@@ -105,19 +84,6 @@ __PACKAGE__->table("orders");
 
   data_type: 'smallint'
   default_value: 0
-  is_nullable: 0
-
-=head2 verified
-
-  data_type: 'tinyint'
-  default_value: 0
-  is_nullable: 0
-
-=head2 result
-
-  data_type: 'tinyint'
-  default_value: 0
-  extra: {unsigned => 1}
   is_nullable: 0
 
 =head2 entry_time
@@ -144,15 +110,6 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
-  "lead_id",
-  {
-    data_type => "integer",
-    default_value => 0,
-    extra => { unsigned => 1 },
-    is_nullable => 0,
-  },
-  "order_id",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 64 },
   "login",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "account",
@@ -171,8 +128,6 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
     size => 32,
   },
-  "contract",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 32 },
   "status",
   {
     data_type => "enum",
@@ -182,15 +137,6 @@ __PACKAGE__->add_columns(
   },
   "req_cnt",
   { data_type => "smallint", default_value => 0, is_nullable => 0 },
-  "verified",
-  { data_type => "tinyint", default_value => 0, is_nullable => 0 },
-  "result",
-  {
-    data_type => "tinyint",
-    default_value => 0,
-    extra => { unsigned => 1 },
-    is_nullable => 0,
-  },
   "entry_time",
   {
     data_type => "timestamp",
@@ -220,48 +166,10 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-17 18:39:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:TS+i7edgefmAWKRmGc24hQ
-use Data::Uniqid qw(luniqid);
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-13 12:42:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+nxoCsr396qDz3aFtzWw7A
 
-sub new {
-    my ($class, $attrs) = @_;
 
-    $attrs->{order_id}= luniqid;
-
-    my $self = $class->next::method($attrs);
-
-    return $self;
-}
-
-sub create_order {
-  my ($self, $api) = @_;
-
-  my $res = $api->create_order($self);
-
-  if ($res->code) {
-    $self->result($res->code);
-  }
-  else {
-    $self->status($res->status);
-  }
-  $self->update;
-}
-
-sub get_order_status {
-  my ($self, $api) = @_;
-
-  my $res = $api->get_order_status($self);
-
-  if ($res->code) {
-    $self->result($res->code);
-  }
-  else {
-    $self->status($res->status);
-  }
-  $self->update;
-}
-
-__PACKAGE__->meta->make_immutable(inline_constructor => 0);
-
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
+__PACKAGE__->meta->make_immutablei(inline_constructor => 0);
 1;

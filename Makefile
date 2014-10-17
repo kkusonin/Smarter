@@ -20,7 +20,7 @@
 #     LICENSE => q[perl]
 #     NAME => q[Smarter]
 #     NO_META => q[1]
-#     PREREQ_PM => { namespace::autoclean=>q[0], Catalyst::Plugin::Static::Simple=>q[0], ExtUtils::MakeMaker=>q[6.36], Catalyst::Plugin::ConfigLoader=>q[0], Catalyst::Action::RenderView=>q[0], Test::More=>q[0.88], Config::General=>q[0], Catalyst::Runtime=>q[5.90075], Moose=>q[0] }
+#     PREREQ_PM => { namespace::autoclean=>q[0], Catalyst::Plugin::Static::Simple=>q[0], ExtUtils::MakeMaker=>q[6.36], Catalyst::Plugin::ConfigLoader=>q[0], Catalyst::Action::RenderView=>q[0], Test::More=>q[0.88], Catalyst::Model::DBIC::Schema=>q[0], Catalyst::Model::Adaptor=>q[0], Config::General=>q[0], Catalyst::Runtime=>q[5.90075], Moose=>q[0] }
 #     TEST_REQUIRES => {  }
 #     VERSION => q[0.01]
 #     VERSION_FROM => q[lib/Smarter.pm]
@@ -174,6 +174,7 @@ MAN1PODS = script/smarter_cgi.pl \
 	script/smarter_server.pl \
 	script/smarter_test.pl
 MAN3PODS = lib/RT/Schema/Result/Order.pm \
+	lib/RtDB/Schema/Result/Order.pm \
 	lib/Smarter.pm \
 	lib/Smarter/Controller/RT/Order.pm \
 	lib/Smarter/Controller/Root.pm \
@@ -203,21 +204,43 @@ PERL_ARCHIVE       =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/RT/Schema.pm \
+TO_INST_PM = lib/RT/API.pm \
+	lib/RT/API/Const.pm \
+	lib/RT/API/Request.pm \
+	lib/RT/API/Response.pm \
+	lib/RT/Schema.pm \
 	lib/RT/Schema/Result/Order.pm \
+	lib/RtDB/Schema.pm \
+	lib/RtDB/Schema/Result/Order.pm \
+	lib/RtDB/Schema/ResultSet/Order.pm \
 	lib/Smarter.pm \
 	lib/Smarter/Controller/RT/Order.pm \
 	lib/Smarter/Controller/Root.pm \
 	lib/Smarter/Model/RtDB.pm \
 	lib/Smarter/Model/VicidialDB.pm \
+	lib/Vicidial/Schema.pm \
 	lib/Vicidial/Schema/Result/Lead.pm \
 	lib/Vicidial/Schema/Result/List.pm \
 	lib/Vicidial/Schema/Result/User.pm
 
-PM_TO_BLIB = lib/RT/Schema.pm \
+PM_TO_BLIB = lib/RT/API.pm \
+	blib/lib/RT/API.pm \
+	lib/RT/API/Const.pm \
+	blib/lib/RT/API/Const.pm \
+	lib/RT/API/Request.pm \
+	blib/lib/RT/API/Request.pm \
+	lib/RT/API/Response.pm \
+	blib/lib/RT/API/Response.pm \
+	lib/RT/Schema.pm \
 	blib/lib/RT/Schema.pm \
 	lib/RT/Schema/Result/Order.pm \
 	blib/lib/RT/Schema/Result/Order.pm \
+	lib/RtDB/Schema.pm \
+	blib/lib/RtDB/Schema.pm \
+	lib/RtDB/Schema/Result/Order.pm \
+	blib/lib/RtDB/Schema/Result/Order.pm \
+	lib/RtDB/Schema/ResultSet/Order.pm \
+	blib/lib/RtDB/Schema/ResultSet/Order.pm \
 	lib/Smarter.pm \
 	blib/lib/Smarter.pm \
 	lib/Smarter/Controller/RT/Order.pm \
@@ -228,6 +251,8 @@ PM_TO_BLIB = lib/RT/Schema.pm \
 	blib/lib/Smarter/Model/RtDB.pm \
 	lib/Smarter/Model/VicidialDB.pm \
 	blib/lib/Smarter/Model/VicidialDB.pm \
+	lib/Vicidial/Schema.pm \
+	blib/lib/Vicidial/Schema.pm \
 	lib/Vicidial/Schema/Result/Lead.pm \
 	blib/lib/Vicidial/Schema/Result/Lead.pm \
 	lib/Vicidial/Schema/Result/List.pm \
@@ -457,6 +482,7 @@ POD2MAN = $(POD2MAN_EXE)
 
 manifypods : pure_all  \
 	lib/RT/Schema/Result/Order.pm \
+	lib/RtDB/Schema/Result/Order.pm \
 	lib/Smarter.pm \
 	lib/Smarter/Controller/RT/Order.pm \
 	lib/Smarter/Controller/Root.pm \
@@ -478,6 +504,7 @@ manifypods : pure_all  \
 	  script/smarter_test.pl $(INST_MAN1DIR)/smarter_test.pl.$(MAN1EXT) 
 	$(NOECHO) $(POD2MAN) --section=3 --perm_rw=$(PERM_RW) \
 	  lib/RT/Schema/Result/Order.pm $(INST_MAN3DIR)/RT::Schema::Result::Order.$(MAN3EXT) \
+	  lib/RtDB/Schema/Result/Order.pm $(INST_MAN3DIR)/RtDB::Schema::Result::Order.$(MAN3EXT) \
 	  lib/Smarter.pm $(INST_MAN3DIR)/Smarter.$(MAN3EXT) \
 	  lib/Smarter/Controller/RT/Order.pm $(INST_MAN3DIR)/Smarter::Controller::RT::Order.$(MAN3EXT) \
 	  lib/Smarter/Controller/Root.pm $(INST_MAN3DIR)/Smarter::Controller::Root.$(MAN3EXT) \
@@ -878,6 +905,7 @@ subdirs-test ::
 
 test_dynamic :: pure_all
 	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-Iinc" "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
 
 testdb_dynamic :: pure_all
 	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-Iinc" "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
@@ -896,6 +924,8 @@ ppd :
 	$(NOECHO) $(ECHO) '    <AUTHOR>root</AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Catalyst::Action::RenderView" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Catalyst::Model::Adaptor" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Catalyst::Model::DBIC::Schema" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Catalyst::Plugin::ConfigLoader" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Catalyst::Plugin::Static::Simple" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Catalyst::Runtime" VERSION="5.90075" />' >> $(DISTNAME).ppd
@@ -912,13 +942,21 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
+	  lib/RT/API.pm blib/lib/RT/API.pm \
+	  lib/RT/API/Const.pm blib/lib/RT/API/Const.pm \
+	  lib/RT/API/Request.pm blib/lib/RT/API/Request.pm \
+	  lib/RT/API/Response.pm blib/lib/RT/API/Response.pm \
 	  lib/RT/Schema.pm blib/lib/RT/Schema.pm \
 	  lib/RT/Schema/Result/Order.pm blib/lib/RT/Schema/Result/Order.pm \
+	  lib/RtDB/Schema.pm blib/lib/RtDB/Schema.pm \
+	  lib/RtDB/Schema/Result/Order.pm blib/lib/RtDB/Schema/Result/Order.pm \
+	  lib/RtDB/Schema/ResultSet/Order.pm blib/lib/RtDB/Schema/ResultSet/Order.pm \
 	  lib/Smarter.pm blib/lib/Smarter.pm \
 	  lib/Smarter/Controller/RT/Order.pm blib/lib/Smarter/Controller/RT/Order.pm \
 	  lib/Smarter/Controller/Root.pm blib/lib/Smarter/Controller/Root.pm \
 	  lib/Smarter/Model/RtDB.pm blib/lib/Smarter/Model/RtDB.pm \
 	  lib/Smarter/Model/VicidialDB.pm blib/lib/Smarter/Model/VicidialDB.pm \
+	  lib/Vicidial/Schema.pm blib/lib/Vicidial/Schema.pm \
 	  lib/Vicidial/Schema/Result/Lead.pm blib/lib/Vicidial/Schema/Result/Lead.pm \
 	  lib/Vicidial/Schema/Result/List.pm blib/lib/Vicidial/Schema/Result/List.pm \
 	  lib/Vicidial/Schema/Result/User.pm blib/lib/Vicidial/Schema/Result/User.pm 
@@ -961,20 +999,20 @@ checkdeps ::
 	$(PERL) Makefile.PL --checkdeps
 
 installdeps ::
-	$(NOECHO) $(NOOP)
+	$(PERL) Makefile.PL --config= --installdeps=Catalyst::Runtime,5.90075,Catalyst::Model::Adaptor,0
 
 installdeps_notest ::
-	$(NOECHO) $(NOOP)
+	$(PERL) Makefile.PL --config=notest,1 --installdeps=Catalyst::Runtime,5.90075,Catalyst::Model::Adaptor,0
 
 upgradedeps ::
-	$(PERL) Makefile.PL --config= --upgradedeps=Test::More,0.88,Catalyst::Runtime,5.90075,Catalyst::Plugin::ConfigLoader,0,Catalyst::Plugin::Static::Simple,0,Catalyst::Action::RenderView,0,Moose,0,namespace::autoclean,0,Config::General,0
+	$(PERL) Makefile.PL --config= --upgradedeps=Catalyst::Runtime,5.90075,Catalyst::Model::Adaptor,0,Test::More,0.88,Catalyst::Plugin::ConfigLoader,0,Catalyst::Plugin::Static::Simple,0,Catalyst::Action::RenderView,0,Catalyst::Model::DBIC::Schema,0,Moose,0,namespace::autoclean,0,Config::General,0
 
 upgradedeps_notest ::
-	$(PERL) Makefile.PL --config=notest,1 --upgradedeps=Test::More,0.88,Catalyst::Runtime,5.90075,Catalyst::Plugin::ConfigLoader,0,Catalyst::Plugin::Static::Simple,0,Catalyst::Action::RenderView,0,Moose,0,namespace::autoclean,0,Config::General,0
+	$(PERL) Makefile.PL --config=notest,1 --upgradedeps=Catalyst::Runtime,5.90075,Catalyst::Model::Adaptor,0,Test::More,0.88,Catalyst::Plugin::ConfigLoader,0,Catalyst::Plugin::Static::Simple,0,Catalyst::Action::RenderView,0,Catalyst::Model::DBIC::Schema,0,Moose,0,namespace::autoclean,0,Config::General,0
 
 listdeps ::
-	@$(PERL) -le "print for @ARGV" 
+	@$(PERL) -le "print for @ARGV" Catalyst::Runtime Catalyst::Model::Adaptor
 
 listalldeps ::
-	@$(PERL) -le "print for @ARGV" Test::More Catalyst::Runtime Catalyst::Plugin::ConfigLoader Catalyst::Plugin::Static::Simple Catalyst::Action::RenderView Moose namespace::autoclean Config::General
+	@$(PERL) -le "print for @ARGV" Catalyst::Runtime Catalyst::Model::Adaptor Test::More Catalyst::Plugin::ConfigLoader Catalyst::Plugin::Static::Simple Catalyst::Action::RenderView Catalyst::Model::DBIC::Schema Moose namespace::autoclean Config::General
 

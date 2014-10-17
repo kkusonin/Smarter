@@ -4,6 +4,10 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+__PACKAGE__->config(
+  account => 'address2',
+);
+
 =head1 NAME
 
 Smarter::Controller::RT::Order - Catalyst Controller
@@ -16,18 +20,52 @@ Catalyst Controller.
 
 =cut
 
+sub base : Chained('/') PathPart('rt') CaptureArgs(0) {
+  my ($self, $c) = @_;
 
-=head2 index
-
-=cut
-
-sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
-
-    $c->response->body('Matched Smarter::Controller::RT::Order in RT::Order.');
+ $c->stash(model => $c->model('RtDB::Order'));
 }
 
+sub create : Chained('base') PathPart('order') Args(0) {
+  my ($self, $c) = @_;
+  my $order;
 
+  my $lead_id = $c->req->params->{lead_id};
+  my $lead = $c->model('VicidialDB::Lead')->find($lead_id);
+  my $status  = $lead->status;
+
+  if ($status eq 'PR') {
+    my $dept_id = $lead->city;
+    my $account = $lead->address2;
+    my $login   = $lead->address3;
+
+    my ($verified) = $lead->get_custom_fields('check_pr');
+    
+    $c->log->info("$lead_id: status not verified") unless $verified == 2;
+
+    eval {
+      $c->log->debug($self->config->{account});
+      $order = $c->model('RtDB::Order')->create({
+          lead_id   => $lead_id,
+          dept_id   => $dept_id,
+          account   => $account,
+          login     => $login,
+          usl       => 'ViasatPremiumHD',
+          contract  => 'SMARTER',
+          verified  => (defined $verified && $verified == 2),
+        });
+    };
+    if ($@) {
+      $c->log->debug("Error creating order: $@");
+    }
+    else {
+      $c->log->debug("Order created. UID: " . $order->order_id);
+    }
+  }
+
+  $c->res->status(200);
+  $c->res->body('OK');
+}
 
 =encoding utf8
 

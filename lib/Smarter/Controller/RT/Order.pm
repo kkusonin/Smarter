@@ -56,10 +56,17 @@ sub create : Chained('base') PathPart('order') Args(0) {
         });
     };
     if ($@) {
-      $c->log->debug("Error creating order: $@");
+      $c->log->error("Error creating order: $@");
     }
     else {
-      $c->log->debug("Order created. UID: " . $order->order_id);
+      $c->log->info("Order created. UID: " . $order->order_id);
+    }
+    eval {
+      my $api = $c->model('RtAPI');
+      $order->create_order($api);
+    };
+    if ($@) {
+      $c->log->error("Remote error: $@");
     }
   }
 
