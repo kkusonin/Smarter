@@ -35,9 +35,10 @@ sub create : Chained('base') PathPart('order') Args(0) {
   my $status  = $lead->status;
 
   if ($status eq 'PR') {
-    my $dept_id = $lead->city;
-    my $account = $lead->address2;
-    my $login   = $lead->address3;
+    my $dept_id       = $lead->city;
+    my $account       = $lead->address2;
+    my $login         = $lead->address3;
+    my $phone_number  = $lead->phone_number;
 
     my ($verified) = $lead->get_custom_fields('check_pr');
     
@@ -46,13 +47,14 @@ sub create : Chained('base') PathPart('order') Args(0) {
     eval {
       $c->log->debug($self->config->{account});
       $order = $c->model('RtDB::Order')->create({
-          lead_id   => $lead_id,
-          dept_id   => $dept_id,
-          account   => $account,
-          login     => $login,
-          usl       => 'ViasatPremiumHD',
-          contract  => 'SMARTER',
-          verified  => (defined $verified && $verified == 2),
+          lead_id       => $lead_id,
+          phone_number  => $phone_number,
+          dept_id       => $dept_id,
+          account       => $account,
+          login         => $login,
+          usl           => 'ViasatPremiumHD',
+          contract      => 'SMARTER',
+          verified      => (defined $verified && $verified == 2),
         });
     };
     if ($@) {
@@ -61,10 +63,12 @@ sub create : Chained('base') PathPart('order') Args(0) {
     else {
       $c->log->info("Order created. UID: " . $order->order_id);
     }
-    eval {
-      my $api = $c->model('RtAPI');
-      $order->create_order($api);
-    };
+    if ($verified == 2) {
+      eval {
+        my $api = $c->model('RtAPI');
+        $order->create_order($api);
+      };
+    }
     if ($@) {
       $c->log->error("Remote error: $@");
     }

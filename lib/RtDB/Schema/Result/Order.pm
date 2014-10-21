@@ -52,6 +52,13 @@ __PACKAGE__->table("orders");
   extra: {unsigned => 1}
   is_nullable: 0
 
+=head2 phone_number
+
+  data_type: 'varchar'
+  default_value: (empty string)
+  is_nullable: 0
+  size: 18
+
 =head2 order_id
 
   data_type: 'varchar'
@@ -151,6 +158,8 @@ __PACKAGE__->add_columns(
     extra => { unsigned => 1 },
     is_nullable => 0,
   },
+  "phone_number",
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 18 },
   "order_id",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 64 },
   "login",
@@ -220,8 +229,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-17 18:39:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:TS+i7edgefmAWKRmGc24hQ
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-21 07:18:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:m8UWn47dEnVRNEXAaI6Y7g
 use Data::Uniqid qw(luniqid);
 
 sub new {
