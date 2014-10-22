@@ -1,0 +1,20 @@
+<table class="table table-borderd table-striped">
+  <thead>
+    <tr>
+      <th>Дата передачи заявки</th>
+      <th>Номер телефона</th>
+      <th>Статус</th>
+      <th>Причина отказа</th>
+    </tr>
+  </thead>
+  <tbody>
+    [% FOREACH order IN collection -%]
+      <tr>
+        <td>[% order.entry_date %]</td>
+        <td>[% order.phone_number %]</td>
+        <td>[% order.status %]</td>
+        <td>[% order.result %]</td>
+      </tr>
+    [% END -%]
+  </tbody>
+</table>

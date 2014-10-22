@@ -1,4 +1,5 @@
 package Smarter::Controller::RT::Order;
+use utf8;
 use Moose;
 use namespace::autoclean;
 
@@ -23,7 +24,7 @@ Catalyst Controller.
 sub base : Chained('/') PathPart('rt') CaptureArgs(0) {
   my ($self, $c) = @_;
 
- $c->stash(model => $c->model('RtDB::Order'));
+ $c->stash(orders => $c->model('RtDB::Order'));
 }
 
 sub create : Chained('base') PathPart('order') Args(0) {
@@ -76,6 +77,38 @@ sub create : Chained('base') PathPart('order') Args(0) {
 
   $c->res->status(200);
   $c->res->body('OK');
+}
+
+sub orders : Chained('base') PathPart('orders') Args(0) {
+  my ($self, $c) = @_;
+
+  my $page = 1;
+  my $action = $self->action_for('list');
+  #$c->log->debug($c->uri_for_action($action,,[1]));
+
+  $c->res->redirect(
+    $c->uri_for_action($action,,[$page])
+  );
+}
+
+sub list : Chained('base') PathPart('orders') Args(1) {
+  my ($self, $c, $page) = @_;
+
+  my $rs = $c->stash->{orders}
+             ->verified
+             ->search(undef,
+              {
+                page => $page,
+                rows => 20,
+              });
+  my $pager = $rs->pager;
+  my @orders = $rs->all;
+  
+  $c->stash(
+    collection  => \@orders,
+    pager       => $pager,
+    template    => 'list.tt2',
+  );
 }
 
 =encoding utf8

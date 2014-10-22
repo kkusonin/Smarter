@@ -271,6 +271,10 @@ sub get_order_status {
   $self->update;
 }
 
+sub entry_date {
+  $_[0]->entry_time->strftime("%d/%m/%Y");
+}
+
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 
 1;
