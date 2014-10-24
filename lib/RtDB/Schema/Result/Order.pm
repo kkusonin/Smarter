@@ -16,6 +16,7 @@ use warnings;
 use Moose;
 use MooseX::NonMoose;
 use MooseX::MarkAsMethods autoclean => 1;
+use RT::API::Response qw(rescode_to_string);
 extends 'DBIx::Class::Core';
 
 =head1 COMPONENTS LOADED
@@ -243,6 +244,12 @@ sub new {
     return $self;
 }
 
+sub reset_id {
+  my $self = shift;
+  $self->order_id(luniqid);
+  $self->update;
+}
+
 sub create_order {
   my ($self, $api) = @_;
 
@@ -250,6 +257,7 @@ sub create_order {
 
   if ($res->code) {
     $self->result($res->code);
+    $self->status('FAILED');
   }
   else {
     $self->status($res->status);
@@ -273,6 +281,10 @@ sub get_order_status {
 
 sub entry_date {
   $_[0]->entry_time->strftime("%d/%m/%Y");
+}
+
+sub result_string {
+  rescode_to_string($_[0]->result);
 }
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

@@ -26,7 +26,7 @@ sub interval {
 
   my $start  = $args->{start} || DateTime->now(time_zone => 'local')
                                          ->subtract(years => 1);
-  my $stop   = $args->{stop}  || DateTime->now(time_zone => 'local');
+  my $end    = $args->{end}  || DateTime->now(time_zone => 'local');
 
   defined $args->{row}  and $attrs{rows} = $args->{row};
   defined $args->{page} and $attrs{page} = $args->{page};
@@ -36,7 +36,7 @@ sub interval {
       entry_time => {
         between => [
           $dtf->format_datetime($start),
-          $dtf->format_datetime($stop),
+          $dtf->format_datetime($end),
         ]
       },
     },

@@ -19,14 +19,12 @@ my $url          = $conf{'Model::RtAPI'}{'args'}{'url'};
 
 my $schema = RtDB::Schema->connect($connect_info);
 
-my @orders = $schema->resultset('Order')->search({
-    status => 'NEW',
-    result => 2,
-  });
+my @orders = $schema->resultset('Order')
+                    ->new_verified;
 
 my $api = RT::API->new(url => $URL);
 
 foreach (@orders) {
-  $_->get_order_status($api);
+   $_->create_order($api);
   print $_->order_id, " : ", $_->status, "\n";
 }
