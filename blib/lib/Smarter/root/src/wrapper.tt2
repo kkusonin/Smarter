@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Orders</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- An HTML5 shim, for IE support of HTML5 date type -->
+    <!--[if IE]>
+      <script src="http://cdn.jsdelivr.net/webshim/1.12.4/extras/modernizr-custom.js"></script>
+      <script src="//cdn.jsdelivr.net/webshim/1.12.5/polyfiller.js"></script>
+      <script>
+        webshims.setOptions('forms-ext', {types: 'date'});
+        webshims.polyfill('forms forms-ext');
+      </script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+      .panel table {
+        margin: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <nav role="navigation" class="navbar navbar-default navbar-inverse">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="http://www.in-serv.ru">INSERV</a>
+        </div>
+      </nav>
+    </div>
+      [% content %]
+  </body>
+</html>

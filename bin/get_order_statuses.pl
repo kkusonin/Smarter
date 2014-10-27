@@ -20,8 +20,7 @@ my $url          = $conf{'Model::RtAPI'}{'args'}{'url'};
 my $schema = RtDB::Schema->connect($connect_info);
 
 my @orders = $schema->resultset('Order')->search({
-    status => 'NEW',
-    result => 2,
+    status => 'PROCESSING',
   });
 
 my $api = RT::API->new(url => $URL);

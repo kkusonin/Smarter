@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbook>
+  <worksheet name="Заявки">
+    <format valign="vcenter" bg_color="orange">
+      <row>
+        <cell width="15">Дата внесения</cell>
+        <cell width="17">Номер Телефона</cell>
+        <cell width="12">Статус</cell>
+        <cell width="64">Причина Отказа</cell>
+      </row>
+    </format>
+
+    [% FOR order IN orders %]
+    <row>
+      <cell>[% order.entry_date %]</cell>
+      <cell>[% order.phone_number %]</cell>
+      <cell>[% order.status %]</cell>
+      <cell>[% order.result_string %]</cell>
+    </row>
+    [% END %]
+  </worksheet>
+</workbook>

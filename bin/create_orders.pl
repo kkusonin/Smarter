@@ -25,6 +25,6 @@ my @orders = $schema->resultset('Order')
 my $api = RT::API->new(url => $URL);
 
 foreach (@orders) {
-   $_->create_order($api);
+  $_->create_order($api);
   print $_->order_id, " : ", $_->status, "\n";
 }

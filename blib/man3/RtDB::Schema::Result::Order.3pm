@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "RtDB::Schema::Result::Order 3"
-.TH RtDB::Schema::Result::Order 3 "2014-10-18" "perl v5.10.1" "User Contributed Perl Documentation"
+.TH RtDB::Schema::Result::Order 3 "2014-10-24" "perl v5.10.1" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -155,6 +155,14 @@ DBIx::Class::InflateColumn::DateTime
 \&  default_value: 0
 \&  extra: {unsigned => 1}
 \&  is_nullable: 0
+.Ve
+.SS "phone_number"
+.IX Subsection "phone_number"
+.Vb 4
+\&  data_type: \*(Aqvarchar\*(Aq
+\&  default_value: (empty string)
+\&  is_nullable: 0
+\&  size: 18
 .Ve
 .SS "order_id"
 .IX Subsection "order_id"

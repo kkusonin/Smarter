@@ -79,7 +79,42 @@ sub create : Chained('base') PathPart('order') Args(0) {
   $c->res->body('OK');
 }
 
-sub list : Chained('base') PathPart('orders') Args(0) {
+sub orders : Chained('base') PathPart('orders') CaptureArgs(0) {
+}
+
+sub xls : Chained('orders') PathPart('xls') Args(0) {
+  my ($self, $c) = @_;
+
+
+  my $start_date = parse_date($c->req->query_params->{start_date})
+                || DateTime->today(time_zone => 'local');
+  my $end_date   = parse_date($c->req->query_params->{end_date})
+                || DateTime->today(time_zone => 'local');
+
+  my @orders = $c->model('RtDB::Order')
+             ->verified
+             ->interval({
+                 start => $start_date,
+                 end   => $end_date->clone->add( days => 1),
+               });
+  my $filename = $start_date->strftime("%Y%m%d")
+                . '_'
+                . $end_date->strftime("%Y%m%d")
+                . '.xls';
+
+  $c->stash(
+    current_view  => 'Excel',
+    orders        => \@orders,
+    template      => 'rt_orders.tt2',
+  );
+
+  $c->res->header(
+    'Content-Disposition' => qq[attachment; filename="$filename"]
+  );
+  $c->forward('Smarter::View::Excel');
+}
+
+sub list : Chained('orders') PathPart('') Args(0) {
   my ($self, $c) = @_;
   
   my $page = $c->req->params->{page} || 1;
@@ -89,7 +124,12 @@ sub list : Chained('base') PathPart('orders') Args(0) {
   my $end_date   = parse_date($c->req->params->{end_date})
                 || DateTime->today(time_zone => 'local');
 
-  my $rs = $c->stash->{orders}
+  if ($c->req->params->{xls}) {
+    $c->log->debug("XLS");
+    $c->forward('xls');
+  }
+
+  my $rs = $c->model('RtDB::Order')
              ->verified
              ->interval({
                  start => $start_date,
@@ -113,15 +153,19 @@ sub list : Chained('base') PathPart('orders') Args(0) {
 }
 
 sub parse_date {
+  my $dt;
+  if (my $str = shift) {
     eval {
-        my ($y, $m, $d) = shift =~ /^(\d{4})-(\d{2})-(\d{2})$/
+        my ($y, $m, $d) = $str =~ /^(\d{4})-(\d{2})-(\d{2})$/
             or die;
-        DateTime->new(
+        $dt = DateTime->new(
             year  => $y,
             month => $m,
             day   => $d,
         );
     };
+  }
+  return $dt;
 }
 
 =encoding utf8

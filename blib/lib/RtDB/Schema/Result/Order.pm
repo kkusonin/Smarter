@@ -16,6 +16,7 @@ use warnings;
 use Moose;
 use MooseX::NonMoose;
 use MooseX::MarkAsMethods autoclean => 1;
+use RT::API::Response qw(rescode_to_string);
 extends 'DBIx::Class::Core';
 
 =head1 COMPONENTS LOADED
@@ -51,6 +52,13 @@ __PACKAGE__->table("orders");
   default_value: 0
   extra: {unsigned => 1}
   is_nullable: 0
+
+=head2 phone_number
+
+  data_type: 'varchar'
+  default_value: (empty string)
+  is_nullable: 0
+  size: 18
 
 =head2 order_id
 
@@ -151,6 +159,8 @@ __PACKAGE__->add_columns(
     extra => { unsigned => 1 },
     is_nullable => 0,
   },
+  "phone_number",
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 18 },
   "order_id",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 64 },
   "login",
@@ -220,8 +230,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-17 18:39:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:TS+i7edgefmAWKRmGc24hQ
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2014-10-21 07:18:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:m8UWn47dEnVRNEXAaI6Y7g
 use Data::Uniqid qw(luniqid);
 
 sub new {
@@ -234,6 +244,12 @@ sub new {
     return $self;
 }
 
+sub reset_id {
+  my $self = shift;
+  $self->order_id(luniqid);
+  $self->update;
+}
+
 sub create_order {
   my ($self, $api) = @_;
 
@@ -241,6 +257,7 @@ sub create_order {
 
   if ($res->code) {
     $self->result($res->code);
+    $self->status('FAILED');
   }
   else {
     $self->status($res->status);
@@ -260,6 +277,14 @@ sub get_order_status {
     $self->status($res->status);
   }
   $self->update;
+}
+
+sub entry_date {
+  $_[0]->entry_time->strftime("%d/%m/%Y");
+}
+
+sub result_string {
+  rescode_to_string($_[0]->result);
 }
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

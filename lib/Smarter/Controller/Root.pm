@@ -30,9 +30,6 @@ The root page (/)
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
-
-    # Hello World
-    $c->response->body( $c->welcome_message );
 }
 
 =head2 default
@@ -53,7 +50,17 @@ Attempt to render a view, if needed.
 
 =cut
 
-sub end : ActionClass('RenderView') {}
+sub end : ActionClass('RenderView') {
+    my ($self, $c) = @_;
+    my $errors = scalar @{$c->error};
+    if ($errors) {
+        $c->log->error("Errors in ${\$c->action}:");
+        $c->log->error($_) for @{$c->error};
+        $c->res->status(500);
+        $c->res->body('Internal Server Error');
+        $c->clear_errors;
+    }
+}
 
 =head1 AUTHOR
 

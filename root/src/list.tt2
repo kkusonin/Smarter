@@ -24,3 +24,5 @@
 </div>
 
 [% PROCESS pager.tt2 %]
+
+[% PROCESS xls_btn.tt2 %]

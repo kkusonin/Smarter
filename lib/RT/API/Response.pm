@@ -68,6 +68,9 @@ sub new {
   croak "HTTP content is empty" unless $r->decoded_content;
 
   my $self = XMLin($r->decoded_content);
+  
+  $self->{http_response} = $r;
+
   return bless $self, $class;
 }
 
