@@ -1,4 +1,4 @@
-package RT::API::Response;
+package RT::API::Const;
 use strict;
 use warnings;
 use utf8;
