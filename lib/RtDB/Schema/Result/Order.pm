@@ -16,7 +16,8 @@ use warnings;
 use Moose;
 use MooseX::NonMoose;
 use MooseX::MarkAsMethods autoclean => 1;
-use RT::API::Response qw(rescode_to_string);
+use RT::API::Const qw(rescode_to_string);
+use Carp qw(croak);
 extends 'DBIx::Class::Core';
 
 =head1 COMPONENTS LOADED
@@ -237,7 +238,8 @@ use Data::Uniqid qw(luniqid);
 sub new {
     my ($class, $attrs) = @_;
 
-    $attrs->{order_id}= luniqid;
+    $attrs->{order_id} = luniqid;
+    $attrs->{status}   = 'NEW';
 
     my $self = $class->next::method($attrs);
 
@@ -252,17 +254,17 @@ sub reset_id {
 
 sub create_order {
   my ($self, $api) = @_;
+  
+  croak 'Order ' . $self->order_id . " can't be created again" 
+    unless $self->status eq 'NEW' || $self->status eq 'FAILED';
 
   my $res = $api->create_order($self);
 
-  if ($res->code) {
-    $self->result($res->code);
-    $self->status('FAILED');
-  }
-  else {
-    $self->status($res->status);
-  }
+  $self->result($res->code);
+  $self->status($res->status);
   $self->update;
+
+  return (wantarray) ? ($self, $res) : $self;
 }
 
 sub get_order_status {
@@ -270,13 +272,11 @@ sub get_order_status {
 
   my $res = $api->get_order_status($self);
 
-  if ($res->code) {
-    $self->result($res->code);
-  }
-  else {
-    $self->status($res->status);
-  }
+  $self->result($res->code);
+  $self->status($res->status);
   $self->update;
+
+  return (wantarray) ? ($self, $res) : $self;
 }
 
 sub entry_date {

@@ -17,7 +17,6 @@ sub format_output {
   }
 }
 
-
 const my $CONFIGFILE => "$FindBin::Bin/../smarter.conf";
 const my $URL        => 'https://10.200.8.3:8043';
 
@@ -30,17 +29,21 @@ my $url          = $conf{'Model::RtAPI'}{'args'}{'url'};
 my $schema = RtDB::Schema->connect($connect_info);
 
 my @orders = $schema->resultset('Order')->search({
-    status => 'ABANDONED',
+    status => 'FAILED',
+    result => 6,
   });
 
 my $api = RT::API->new(url => $URL);
 
-print "Order id: ", $orders[0]->order_id, "\n";
+foreach my $order (@orders) {
 
-my ($order, $res) = $orders[0]->get_order_status($api);
+  $order->reset_id;
 
-my $req = $res->request;
+  my ($order, $res) = $order->create_order($api);
 
-format_output($req->decoded_content);
-format_output($res->decoded_content);;
+  my $req = $res->request;
+
+  format_output($req->decoded_content);
+  format_output($res->decoded_content);
+}
 

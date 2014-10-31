@@ -67,7 +67,11 @@ sub create : Chained('base') PathPart('order') Args(0) {
     if ($verified == 2) {
       eval {
         my $api = $c->model('RtAPI');
-        $order->create_order($api);
+        my ($o, $res) = $order->create_order($api);
+        if ($res->code) {
+          $c->log->debug($res->request->decoded_content);
+          $c->log->debug($res->decoded_content);
+        }
       };
     }
     if ($@) {

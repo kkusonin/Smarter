@@ -47,7 +47,7 @@ sub _request {
 
   my $response = $self->_user_agent->request($request);
 
-  return RT::API::Response->new($response);
+  return RT::API::Response->new(response => $response);
 }
       
 __PACKAGE__->meta->make_immutable;
