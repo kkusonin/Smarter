@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use warnings;
+no warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Config::General;
@@ -30,7 +30,7 @@ my $schema = RtDB::Schema->connect($connect_info);
 
 my @orders = $schema->resultset('Order')->search({
     status => 'FAILED',
-    result => 6,
+    result => 0,
   });
 
 my $api = RT::API->new(url => $URL);

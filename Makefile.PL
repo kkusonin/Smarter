@@ -15,8 +15,14 @@ requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Model::DBIC::Schema';
 requires 'Catalyst::Model::Adaptor';
+requires 'Catalyst::View::TT';
 requires 'Catalyst::View::Excel::Template::Plus';
 requires 'Moose';
+requires 'DateTime';
+requires 'DateTime::Format::MySQL';
+requires 'Data::Uniqid';
+requires 'XML::Simple';
+requires 'Const::Fast';
 requires 'namespace::autoclean';
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats

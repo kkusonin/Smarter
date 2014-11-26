@@ -41,6 +41,10 @@ sub create : Chained('base') PathPart('order') Args(0) {
     my $login         = $lead->address3;
     my $phone_number  = $lead->phone_number;
 
+    # Trim spaces from login
+    $login =~ s/^\s+//;
+    $login =~ s/\s+$//;
+
     my ($verified) = $lead->get_custom_fields('check_pr');
     
     $c->log->info("$lead_id: status not verified") unless $verified == 2;

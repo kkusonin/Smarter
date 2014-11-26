@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use warnings;
+no warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Config::General;
@@ -10,13 +10,13 @@ use RtDB::Schema;
 use Data::Dumper;
 
 sub format_output {
-  chomp @_;
-  printf("[%02d/%02d/%04d %02d:%02d%02d] %s\n", sub { $_[3], $_[4]+1, $_[5] + 1900, $_[2], $_[1], $_[0] }->(localtime), shift);
-  foreach (@_) {
+  my $msg = shift;
+  my @lines = grep { length $_ } split "\n", $msg;
+  printf("[%02d/%02d/%04d %02d:%02d:%02d] %s\n", sub { $_[3], $_[4]+1, $_[5] + 1900, $_[2], $_[1], $_[0] }->(localtime), shift);
+  foreach (@lines) {
     printf "                                 %s\n", $_;
   }
 }
-
 
 const my $CONFIGFILE => "$FindBin::Bin/../smarter.conf";
 const my $URL        => 'https://10.200.8.3:8043';
@@ -30,17 +30,29 @@ my $url          = $conf{'Model::RtAPI'}{'args'}{'url'};
 my $schema = RtDB::Schema->connect($connect_info);
 
 my @orders = $schema->resultset('Order')->search({
-    status => 'ABANDONED',
+    status   => 'NEW',
+    verified => 0,
   });
 
 my $api = RT::API->new(url => $URL);
 
-print "Order id: ", $orders[0]->order_id, "\n";
+foreach my $order (@orders) {
 
-my ($order, $res) = $orders[0]->get_order_status($api);
+  my $login = $order->login;
+  # Mayby this order has duplicate with normal status
+  my $dup = $schema->resultset('Order')->search({
+    login  => $login,
+    status => {'!=' => 'NEW'}
+  })->single; 	
 
-my $req = $res->request;
+  next if ($dup);
 
-format_output($req->decoded_content);
-format_output($res->decoded_content);;
+  my ($order, $res) = $order->create_order($api);
+
+  my $req = $res->request;
+
+  format_output($req->decoded_content);
+  format_output($res->decoded_content);
+ 
+}
 
